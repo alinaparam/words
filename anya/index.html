@@ -104,6 +104,8 @@ const KEY = 'mywords_anya';
 const SPK = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
 const PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>', PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
 const W = {}; DATA.words.forEach(w => W[w.id] = w);
+const syn = id => DATA.words.filter(x => x.g && x.g === W[id].g && x.id !== id);
+const byEn = t => DATA.words.find(x => x.en.toLowerCase().replace(/[.,!?]/g, '').trim() === t.toLowerCase().replace(/[.,!?]/g, '').trim());
 const st = {k:{}, m:{}};  // only for this visit: mistakes make a word come up more often
 const save = () => {}, prog = () => {};
 const SES = {ok: 0, n: 0};  // accuracy for this visit only
@@ -237,7 +239,7 @@ function quiz(title, sub, items, render) {
   next();
 }
 function options(box, right, pool, label, onDone, id) {
-  const wrong = shuf(pool.filter(w => w.id !== right.id)).slice(0, 3);
+  const wrong = shuf(pool.filter(w => w.id !== right.id && !(right.g && w.g === right.g))).slice(0, 3);
   const o = h('div', 'opts'); let locked = false;
   shuf([right, ...wrong]).forEach(w => { const b = h('button', '', esc(label(w))); b.onclick = () => {
     if (locked) return; locked = true;
@@ -258,6 +260,7 @@ function choose(L) {
 }
 /* typed answer helper */
 function typed(box, answers, id, onDone, after) {
+  if (W[id] && W[id].g) answers = answers.concat(syn(id).map(x => x.en));  // synonyms count too
   const fb = h('div', 'fb'); const inp = box.querySelector('.sent input') || (() => { const x = h('input', 'tin'); x.placeholder = 'напиши по-английски'; box.append(x); return x; })();
   inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('autocapitalize', 'off');
   const r = h('div', 'row'), hint = h('button', '', 'Подсказка'), go = h('button', 'btn', 'Проверить'); r.append(hint, go); box.append(r, fb);
@@ -319,7 +322,8 @@ function text(L) {
     parts.forEach((p, i) => { if (i % 2 === 0) tx.append(document.createTextNode(p)); else {
       left++; answers.push(p); const sl = h('span', 'slot', '&nbsp;'); sl.dataset.a = p;
       const put = word => { if (sl.classList.contains('ok')) return;
-        if (norm(word.dataset.w) === norm(p)) { sl.className = 'slot ok'; sl.textContent = p; word.remove(); sel = null; tx.querySelectorAll('.armed').forEach(x => x.classList.remove('armed')); left--; const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) hit(w.id); stat(true); if (!left) done(); }
+        const wp = byEn(p), wd = byEn(word.dataset.w);
+        if (norm(word.dataset.w) === norm(p) || (wp && wd && wp.g && wp.g === wd.g)) { sl.className = 'slot ok'; sl.textContent = word.dataset.w; word.remove(); sel = null; tx.querySelectorAll('.armed').forEach(x => x.classList.remove('armed')); left--; const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) hit(w.id); stat(true); if (!left) done(); }
         else { errs++; sl.classList.add('bad'); setTimeout(() => sl.classList.remove('bad'), 600); const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) miss(w.id); stat(false); } };
       sl.onclick = () => { if (sel) put(sel); };
       sl.ondragover = e => { e.preventDefault(); sl.classList.add('over'); }; sl.ondragleave = () => sl.classList.remove('over');
