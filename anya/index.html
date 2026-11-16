@@ -8,6 +8,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Manrope,syste
 h1,h2{font-family:Manrope,sans-serif;font-weight:800;margin:0;letter-spacing:-.01em}
 header h1{font-size:clamp(28px,6vw,40px);line-height:1.15}
 header p{color:#5E5A5A;margin:10px 0 0;max-width:680px;font-size:16px}
+.ses{position:sticky;top:8px;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 18px;margin:16px 0 0;box-shadow:0 2px 10px rgba(0,0,0,.06);font-weight:700}
+.ses .t{color:var(--muted);font-size:14px}.ses .v{font-size:20px;font-weight:800}.ses .n{color:var(--muted);font-size:14px}
+.ses.hi .v{color:var(--ok)}.ses.mid .v{color:var(--warn)}.ses.lo .v{color:var(--bad)}
 .bar{margin:18px 0 6px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
 .lbl{font:800 12px Manrope,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
@@ -89,6 +92,7 @@ input:focus{outline:none;border-color:var(--acc)}
 @media(max-width:640px){.bank{flex-wrap:nowrap;overflow-x:auto;padding:8px 2px}.bank button{flex:none}}
 </style></head><body><div class="wrap">
 <header><h1>Мои слова</h1><p>Аня, это твои слова со всех наших уроков. Здесь их можно тренировать сколько угодно: смотреть карточки с картинками, слушать, как звучит каждое слово, составлять пары, вписывать слова в предложения и истории. После уроков новые слова будут появляться здесь сами, ссылка всегда одна и та же.</p></header>
+<div class="ses" id="ses"><span class="t">🎯 Точность за сессию</span><span class="v" id="sesV">—</span><span class="n" id="sesN">ответь на первое задание</span></div>
 <div class="bar"><div class="lbl">Набор слов</div><div class="chips" id="filters"></div>
 </div>
 <div class="bar"><div class="lbl">Тренировка</div><div class="modes" id="modes"></div></div>
@@ -102,6 +106,10 @@ const PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>', PAUSE =
 const W = {}; DATA.words.forEach(w => W[w.id] = w);
 const st = {k:{}, m:{}};  // only for this visit: mistakes make a word come up more often
 const save = () => {}, prog = () => {};
+const SES = {ok: 0, n: 0};  // accuracy for this visit only
+function stat(good) { SES.n++; if (good) SES.ok++; const p = Math.round(SES.ok / SES.n * 100), el = document.getElementById('ses');
+  el.className = 'ses ' + (p >= 85 ? 'hi' : p >= 60 ? 'mid' : 'lo'); document.getElementById('sesV').textContent = p + '%';
+  document.getElementById('sesN').textContent = 'верно ' + SES.ok + ' из ' + SES.n; }
 const miss = id => { st.m[id] = (st.m[id] || 0) + 1; };
 const hit = id => { if (st.m[id]) st.m[id]--; };
 const $ = (s, el = document) => el.querySelector(s);
@@ -217,9 +225,9 @@ function match(L) {
   shuf(set).forEach(w => { const x = h('button', '', '<img src="' + img(w.id) + '" alt=""><span>' + esc(w.en) + '</span>'); x.dataset.id = w.id; x.onclick = () => { if (x.classList.contains('done')) return; a.querySelectorAll('.sel').forEach(e => e.classList.remove('sel')); x.classList.add('sel'); sel = x; say('audio/w_' + w.id + '.mp3'); }; a.append(x); });
   shuf(set).forEach(w => { const y = h('button', '', '<span>' + esc(w.ru) + '</span>'); y.onclick = () => {
     if (!sel || y.classList.contains('done')) return;
-    if (sel.dataset.id === w.id) { sel.classList.remove('sel'); sel.classList.add('done'); y.classList.add('done'); hit(w.id); sel = null; done++; $('.cnt', S).textContent = done + ' / ' + set.length;
+    if (sel.dataset.id === w.id) { sel.classList.remove('sel'); sel.classList.add('done'); y.classList.add('done'); hit(w.id); stat(true); sel = null; done++; $('.cnt', S).textContent = done + ' / ' + set.length;
       if (done === set.length) setTimeout(() => me === RUN && finish(S, set.length - Math.min(errs, set.length), set.length, () => match(L)), 600); }
-    else { errs++; miss(sel.dataset.id); [sel, y].forEach(e => { e.classList.remove('shake'); void e.offsetWidth; e.classList.add('shake'); }); }
+    else { errs++; miss(sel.dataset.id); stat(false); [sel, y].forEach(e => { e.classList.remove('shake'); void e.offsetWidth; e.classList.add('shake'); }); }
   }; b.append(y); });
 }
 /* generic one-by-one quiz */
@@ -233,8 +241,8 @@ function options(box, right, pool, label, onDone, id) {
   const o = h('div', 'opts'); let locked = false;
   shuf([right, ...wrong]).forEach(w => { const b = h('button', '', esc(label(w))); b.onclick = () => {
     if (locked) return; locked = true;
-    if (w.id === right.id) { b.classList.add('right'); hit(id); onDone(true); }
-    else { b.classList.add('wrong'); [...o.children].find(x => x.textContent === label(right)).classList.add('right'); miss(id); onDone(false); }
+    if (w.id === right.id) { b.classList.add('right'); hit(id); stat(true); onDone(true); }
+    else { b.classList.add('wrong'); [...o.children].find(x => x.textContent === label(right)).classList.add('right'); miss(id); stat(false); onDone(false); }
   }; o.append(b); });
   box.append(o);
 }
@@ -262,7 +270,7 @@ function typed(box, answers, id, onDone, after) {
     if (!good && base && core(base) === core(v)) { good = true; close = true; }
     fb.className = 'fb ' + (close ? 'warn' : good ? 'ok' : 'bad');
     fb.innerHTML = close ? 'Почти! Слово верное, но здесь нужна форма: <b>' + esc(answers[0]) + '</b>' : good ? 'Верно!' : 'Правильно: <b>' + esc(answers[0]) + '</b>';
-    inp.style.borderColor = close ? 'var(--warn)' : good ? 'var(--ok)' : 'var(--bad)'; good && !hints ? hit(id) : !good && miss(id);
+    inp.style.borderColor = close ? 'var(--warn)' : good ? 'var(--ok)' : 'var(--bad)'; good && !hints ? hit(id) : !good && miss(id); stat(good);
     if (after) after(good); onDone(good);
   };
   go.onclick = check; inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); if (locked) { const n = box.querySelector('.nxt'); if (n) n.click(); } else check(); } }; setTimeout(() => inp.focus({preventScroll: true}), 50);
@@ -311,8 +319,8 @@ function text(L) {
     parts.forEach((p, i) => { if (i % 2 === 0) tx.append(document.createTextNode(p)); else {
       left++; answers.push(p); const sl = h('span', 'slot', '&nbsp;'); sl.dataset.a = p;
       const put = word => { if (sl.classList.contains('ok')) return;
-        if (norm(word.dataset.w) === norm(p)) { sl.className = 'slot ok'; sl.textContent = p; word.remove(); sel = null; tx.querySelectorAll('.armed').forEach(x => x.classList.remove('armed')); left--; const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) hit(w.id); if (!left) done(); }
-        else { errs++; sl.classList.add('bad'); setTimeout(() => sl.classList.remove('bad'), 600); const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) miss(w.id); } };
+        if (norm(word.dataset.w) === norm(p)) { sl.className = 'slot ok'; sl.textContent = p; word.remove(); sel = null; tx.querySelectorAll('.armed').forEach(x => x.classList.remove('armed')); left--; const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) hit(w.id); stat(true); if (!left) done(); }
+        else { errs++; sl.classList.add('bad'); setTimeout(() => sl.classList.remove('bad'), 600); const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) miss(w.id); stat(false); } };
       sl.onclick = () => { if (sel) put(sel); };
       sl.ondragover = e => { e.preventDefault(); sl.classList.add('over'); }; sl.ondragleave = () => sl.classList.remove('over');
       sl.ondrop = e => { e.preventDefault(); sl.classList.remove('over'); const w = bank.querySelector('[data-w="' + CSS.escape(e.dataTransfer.getData('text')) + '"]'); if (w) put(w); };
