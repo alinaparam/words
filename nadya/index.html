@@ -1,0 +1,350 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Nadya · My words</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F5F4F4;--surface:#FFFFFF;--ink:#2D2A2A;--muted:#8A8585;--line:#E8E6E6;--acc:#444141;--acc2:#5C8F7B;--ok:#3E9467;--okbg:#E7F3EC;--bad:#D0574F;--badbg:#FBE8E6;--warn:#C98A2B;--chip:#F2F1F1;--card:#FAFAFA;--field:#F5F4F4;--sel:#E4E2E2;--over:#E3EFE9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Manrope,system-ui,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:22px 16px 80px}
+h1,h2{font-family:Manrope,sans-serif;font-weight:800;margin:0;letter-spacing:-.01em}
+header h1{font-size:clamp(28px,6vw,40px);line-height:1.15}
+header p{color:#5E5A5A;margin:10px 0 0;max-width:680px;font-size:16px}
+.ses{position:sticky;top:8px;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 18px;margin:16px 0 0;box-shadow:0 2px 10px rgba(0,0,0,.06);font-weight:700}
+.ses .t{color:var(--muted);font-size:14px}.ses .v{font-size:20px;font-weight:800}.ses .n{color:var(--muted);font-size:14px}
+.ses.hi .v{color:var(--ok)}.ses.mid .v{color:var(--warn)}.ses.lo .v{color:var(--bad)}
+.bar{margin:18px 0 6px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.lbl{font:800 12px Manrope,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+button{font:700 15px Manrope,sans-serif;cursor:pointer;border-radius:12px;border:1.5px solid var(--line);background:var(--chip);color:var(--ink);padding:8px 14px;transition:.15s}
+button:hover{border-color:var(--acc2)}
+button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+.btn{background:var(--acc);border-color:var(--acc);color:#fff}
+.prog{display:flex;align-items:center;gap:12px;margin-top:12px;font-weight:700;font-size:14px;color:var(--muted)}
+.prog .track{flex:1;height:8px;background:var(--chip);border-radius:9px;overflow:hidden}.prog .track i{display:block;height:100%;background:var(--ok);width:0;transition:.4s}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.modes button{display:flex;flex-direction:column;align-items:flex-start;gap:0;text-align:left;padding:10px 12px}
+.modes button small{font-weight:500;font-size:12px;color:var(--muted)}.modes button.on small{color:#FBEDE3}
+@media(max-width:640px){.modes{grid-template-columns:repeat(2,1fr)}}
+section{box-shadow:0 1px 3px rgba(80,60,40,.06);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin:16px 0}
+h2{font-size:26px}.sub{color:var(--muted);margin:4px 0 14px}
+.cnt{float:right;font-weight:800;color:var(--acc2)}
+.ph{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;background:var(--chip)}
+.spk{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border-radius:50%;flex:none}
+.spk svg{width:20px;height:20px;fill:currentColor}
+/* flash card */
+.fc{max-width:420px;margin:0 auto;perspective:1200px;cursor:pointer}
+.fc .in{position:relative;transition:transform .5s;transform-style:preserve-3d;min-height:440px}
+.fc.flip .in{transform:rotateY(180deg)}
+.fc .side{position:absolute;inset:0;backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.fc .back{transform:rotateY(180deg);justify-content:center;text-align:center;padding:24px}
+.fc .w{font:800 26px Manrope,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fc .back .ru{font:800 28px Manrope,sans-serif;color:var(--ink)}
+.fc .back .exs{color:var(--muted);margin-top:14px;font-size:17px}.fc .back .exs b{color:var(--ink)}
+.hint{color:var(--muted);font-size:13px;text-align:center}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:14px}
+/* quiz */
+.qbox{max-width:560px;margin:0 auto}
+.qhead{display:flex;gap:14px;align-items:center}
+.qhead img{width:150px;aspect-ratio:4/3;object-fit:cover;border-radius:12px;flex:none}
+.qhead .t{font:800 22px Manrope,sans-serif}
+.qhead .t small{display:block;font:500 14px Manrope,sans-serif;color:var(--muted)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.opts button{padding:12px;text-align:left}
+.opts button.right{background:var(--ok);border-color:var(--ok);color:#fff}
+.opts button.wrong{background:var(--bad);border-color:var(--bad);color:#fff}
+@media(max-width:520px){.fc .in{min-height:375px}.opts{grid-template-columns:1fr}.qhead img{width:110px}.qhead .t{font-size:20px}}
+.sent{font-size:20px;line-height:1.9;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+.sent input,.tin{font:700 18px Manrope,sans-serif;background:var(--field);color:var(--ink);border:none;border-bottom:2px solid var(--acc2);padding:2px 8px;min-width:8ch;text-align:center;border-radius:6px 6px 0 0}
+.tin{width:100%;text-align:left;padding:10px 12px;margin-top:14px;font-size:20px}
+input:focus{outline:none;border-color:var(--acc)}
+.fb{margin-top:12px;font-weight:700;min-height:1.6em;text-align:center}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}.fb.warn{color:var(--warn)}.tr{color:var(--muted);font-size:16px;font-weight:600}
+.situ{font:600 20px/1.5 Manrope,sans-serif;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:14px;padding:16px}
+/* match */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mcol{display:flex;flex-direction:column;gap:8px}
+.mcol button{display:flex;align-items:center;gap:10px;text-align:left;min-height:56px;padding:6px 10px}
+.mcol img{width:56px;height:42px;object-fit:cover;border-radius:8px;flex:none}
+.mcol button.sel{border-color:var(--acc);background:var(--sel)}
+.mcol button.done{background:var(--okbg);border-color:var(--ok);opacity:.55;cursor:default}
+.mcol button.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.mcol button.shake{border-color:var(--bad)}
+/* text */
+.text{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;line-height:2.5;font-size:17px}
+.slot{display:inline-block;min-width:110px;border-bottom:2px dashed var(--acc2);text-align:center;padding:0 6px;margin:0 2px;line-height:1.6;border-radius:6px 6px 0 0;cursor:pointer;color:var(--muted)}
+.slot.over,.slot.armed{background:var(--over)}
+.slot.ok{border:none;background:var(--okbg);color:var(--ok);font-weight:800;cursor:default}
+.slot.bad{background:var(--badbg)}
+.bank{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;position:sticky;top:6px;z-index:3;background:var(--surface);padding:8px 0}
+.bank button{cursor:grab;font-weight:600}.bank button.sel{background:var(--acc);border-color:var(--acc);color:#fff}
+/* player */
+.pl{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:30px;padding:6px 14px 6px 6px;margin-top:12px}
+.pl input[type=range]{flex:1;accent-color:var(--acc)}
+.pl .tm{font:600 13px Manrope,sans-serif;color:var(--muted);min-width:80px;text-align:right}
+.res{text-align:center;padding:16px}
+.res .big{font:800 48px Manrope,sans-serif;color:var(--ink)}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+.list .it{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer}
+.list .it img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.list .it div{padding:6px 10px;font-weight:700;font-size:14px}.list .it small{display:block;color:var(--muted);font-weight:500}
+.list .it div{position:relative;padding-right:30px}.lsp{position:absolute;right:8px;top:8px;width:18px;height:18px;color:var(--muted)}.lsp svg{width:18px;height:18px;fill:currentColor}
+.empty{color:var(--muted);text-align:center;padding:30px}
+@media(max-width:640px){.bank{flex-wrap:nowrap;overflow-x:auto;padding:8px 2px}.bank button{flex:none}}
+</style></head><body><div class="wrap">
+<header><h1>Мои слова</h1><p>Надя, это твои слова со всех наших уроков. Здесь их можно тренировать сколько угодно: смотреть карточки с картинками, слушать, как звучит каждое слово, составлять пары, вписывать слова в предложения и истории. После уроков новые слова будут появляться здесь сами, ссылка всегда одна и та же.</p></header>
+<div class="ses" id="ses"><span class="t">🎯 Точность за сессию</span><span class="v" id="sesV">—</span><span class="n" id="sesN">ответь на первое задание</span></div>
+<div class="bar"><div class="lbl">Набор слов</div><div class="chips" id="filters"></div>
+</div>
+<div class="bar"><div class="lbl">Тренировка</div><div class="modes" id="modes"></div></div>
+<section id="stage"></section>
+</div>
+<script>
+const DATA = {"student": "Nadya", "title": "Nadya · My words", "sets": {"1": "Набор 1 · слова 1–33"}, "words": [{"id": "howdoing", "en": "How are you doing?", "ru": "Как дела?", "m": "2026-11", "g": "greet", "ex": [{"t": "Hi, Mike! ___ — Pretty good, thanks!", "a": ["How are you doing"]}, {"t": "Good morning, Nadya! ___", "a": ["How are you doing"]}], "set": 1}, {"id": "howgoing", "en": "How's it going?", "ru": "Как дела? (разговорное)", "m": "2026-11", "g": "greet", "ex": [{"t": "Hey, Sam! ___ — Not bad!", "a": ["How's it going", "How is it going"]}, {"t": "So, ___ at your new job?", "a": ["how's it going", "how is it going"]}], "set": 1}, {"id": "whatsup", "en": "What's up?", "ru": "Как дела? Что нового?", "m": "2026-11", "g": "greet", "ex": [{"t": "Hey, Jess! ___ — Not much. And you?", "a": ["What's up", "What is up"]}, {"t": "You look sad. ___", "a": ["What's up", "What is up"]}], "set": 1}, {"id": "doingwell", "en": "I'm doing well", "ru": "У меня всё хорошо", "m": "2026-11", "g": "good", "ex": [{"t": "How are you doing? — ___, thank you!", "a": ["I'm doing well", "I am doing well"]}, {"t": "Don't worry about me. ___.", "a": ["I'm doing well", "I am doing well"]}], "set": 1}, {"id": "prettygood", "en": "pretty good", "ru": "довольно хорошо", "m": "2026-11", "g": "good", "ex": [{"t": "How's it going? — ___, thanks!", "a": ["pretty good"]}, {"t": "The coffee here is ___.", "a": ["pretty good"]}], "set": 1}, {"id": "neverbetter", "en": "never better", "ru": "лучше не бывает", "m": "2026-11", "g": "good", "ex": [{"t": "I'm on vacation in Turkey! How am I? ___!", "a": ["never better"]}, {"t": "How are you doing? — ___! I have a new job!", "a": ["never better"]}], "set": 1}, {"id": "soso", "en": "so-so", "ru": "так себе", "m": "2026-11", "g": "ok", "ex": [{"t": "How was the movie? — ___. Not great, not bad.", "a": ["so-so", "so so"]}, {"t": "How are you? — Hmm… ___. I'm a little tired.", "a": ["so-so", "so so"]}], "set": 1}, {"id": "cantcomplain", "en": "can't complain", "ru": "жаловаться не на что", "m": "2026-11", "g": "ok", "ex": [{"t": "How's it going? — ___! Everything is OK.", "a": ["can't complain", "cannot complain", "can not complain"]}, {"t": "Work is fine, family is fine. I ___.", "a": ["can't complain", "cannot complain", "can not complain"]}], "set": 1}, {"id": "notbad", "en": "not bad", "ru": "неплохо", "m": "2026-11", "g": "ok", "ex": [{"t": "How are you doing? — ___, thanks. And you?", "a": ["not bad"]}, {"t": "Your English is ___!", "a": ["not bad"]}], "set": 1}, {"id": "couldbebetter", "en": "could be better", "ru": "могло быть и лучше", "m": "2026-11", "g": "bad", "ex": [{"t": "How's it going? — Hmm, ___. My flight is late.", "a": ["could be better"]}, {"t": "How was your day? — It ___.", "a": ["could be better"]}], "set": 1}, {"id": "awful", "en": "awful", "ru": "ужасно", "m": "2026-11", "g": "bad", "ex": [{"t": "My flight is cancelled! I feel ___.", "a": ["awful"]}, {"t": "The weather is ___ today. It's cold and rainy.", "a": ["awful"]}], "set": 1}, {"id": "about", "en": "about", "ru": "примерно, около", "m": "2026-11", "ex": [{"t": "The flight is ___ ten hours.", "a": ["about"]}, {"t": "It's ___ five minutes on foot.", "a": ["about"]}], "set": 1}, {"id": "threetimes", "en": "three times a year", "ru": "три раза в год", "m": "2026-11", "ex": [{"t": "I travel ___: in March, in July and in December.", "a": ["three times a year"]}, {"t": "How often do you fly? — ___.", "a": ["three times a year"]}], "set": 1}, {"id": "through", "en": "through", "ru": "через", "m": "2026-11", "ex": [{"t": "First, go ___ security.", "a": ["through"]}, {"t": "We walk ___ the park every morning.", "a": ["through"]}], "set": 1}, {"id": "tray", "en": "tray", "ru": "лоток, контейнер (на досмотре)", "m": "2026-11", "ex": [{"t": "Put your phone and your keys in the ___.", "a": ["tray"]}, {"t": "Your laptop goes in a separate ___.", "a": ["tray"]}], "set": 1}, {"id": "desk", "en": "desk", "ru": "стол, стойка", "m": "2026-11", "ex": [{"t": "Go to the check-in ___ with your passport.", "a": ["desk"]}, {"t": "Ask at the information ___.", "a": ["desk"]}], "set": 1}, {"id": "lounge", "en": "departure lounge", "ru": "зал ожидания вылета", "m": "2026-11", "ex": [{"t": "After security, we wait in the ___.", "a": ["departure lounge"]}, {"t": "There is a nice café in the ___.", "a": ["departure lounge"]}], "set": 1}, {"id": "cancelled", "en": "cancelled", "ru": "отменён", "m": "2026-11", "ex": [{"t": "Oh no! Our flight is ___!", "a": ["cancelled", "canceled"]}, {"t": "The concert is ___ because of the rain.", "a": ["cancelled", "canceled"]}], "set": 1}, {"id": "haveready", "en": "have ready", "ru": "приготовить, держать наготове", "m": "2026-11", "ex": [{"t": "Please ___ your passport and boarding pass.", "a": ["have ready"]}, {"t": "___ your ticket, please.", "a": ["Have ready"]}], "set": 1}, {"id": "unattended", "en": "unattended", "ru": "без присмотра", "m": "2026-11", "ex": [{"t": "Don't leave your bags ___.", "a": ["unattended"]}, {"t": "There is an ___ suitcase near the gate.", "a": ["unattended"]}], "set": 1}, {"id": "quiet", "en": "quiet", "ru": "тихий", "m": "2026-11", "ex": [{"t": "The library is very ___.", "a": ["quiet"]}, {"t": "It's early, so the airport is ___.", "a": ["quiet"]}], "set": 1}, {"id": "safe", "en": "safe", "ru": "безопасный", "m": "2026-11", "ex": [{"t": "Is this street ___ at night?", "a": ["safe"]}, {"t": "Keep your passport in a ___ place.", "a": ["safe"]}], "set": 1}, {"id": "line", "en": "line", "ru": "очередь", "m": "2026-11", "ex": [{"t": "There is a long ___ at security.", "a": ["line"]}, {"t": "Please wait in ___.", "a": ["line"]}], "set": 1}, {"id": "hangon", "en": "Hang on a sec", "ru": "Секунду, подожди", "m": "2026-11", "ex": [{"t": "Where's my passport? ___… Here it is!", "a": ["Hang on a sec", "Hang on a second"]}, {"t": "Mom is calling. ___, please.", "a": ["Hang on a sec", "Hang on a second"]}], "set": 1}, {"id": "gostraight", "en": "go straight", "ru": "идти прямо", "m": "2026-11", "ex": [{"t": "___ for two blocks.", "a": ["Go straight"]}, {"t": "Don't turn. Just ___.", "a": ["go straight"]}], "set": 1}, {"id": "turnleft", "en": "turn left", "ru": "повернуть налево", "m": "2026-11", "ex": [{"t": "___ at the bank.", "a": ["Turn left"]}, {"t": "Go straight and ___ at the corner.", "a": ["turn left"]}], "set": 1}, {"id": "turnright", "en": "turn right", "ru": "повернуть направо", "m": "2026-11", "ex": [{"t": "___ onto Fifth Avenue.", "a": ["Turn right"]}, {"t": "Cross the street and ___.", "a": ["turn right"]}], "set": 1}, {"id": "walkup", "en": "walk up", "ru": "идти вверх по улице", "m": "2026-11", "ex": [{"t": "___ Madison Avenue to 42nd Street.", "a": ["Walk up"]}, {"t": "Every morning I ___ the hill to my office.", "a": ["walk up"]}], "set": 1}, {"id": "walkdown", "en": "walk down", "ru": "идти вниз по улице", "m": "2026-11", "ex": [{"t": "___ Sixth Avenue to 34th Street.", "a": ["Walk down"]}, {"t": "We ___ the street to the river.", "a": ["walk down"]}], "set": 1}, {"id": "cross", "en": "cross the street", "ru": "перейти улицу", "m": "2026-11", "ex": [{"t": "Stop at the traffic lights and then ___.", "a": ["cross the street"]}, {"t": "Look left and right before you ___.", "a": ["cross the street"]}], "set": 1}, {"id": "walkpast", "en": "walk past", "ru": "пройти мимо", "m": "2026-11", "ex": [{"t": "___ the library. The museum is on your right.", "a": ["Walk past"]}, {"t": "Every day I ___ a little café.", "a": ["walk past"]}], "set": 1}, {"id": "howget", "en": "How do I get to...?", "ru": "Как мне добраться до...?", "m": "2026-11", "ex": [{"t": "Excuse me, ___ Times Square?", "a": ["how do I get to"]}, {"t": "___ the airport from here?", "a": ["How do I get to"]}], "set": 1}, {"id": "cost", "en": "cost", "ru": "стоить", "m": "2026-11", "ex": [{"t": "How much does this coffee ___?", "a": ["cost"]}, {"t": "The ticket ___ fifty dollars.", "a": ["costs"]}], "set": 1}], "situations": [{"t": "Your friend says hi and wants to know how you are.", "a": "howdoing"}, {"t": "A very informal way to say hi and ask how things are.", "a": "whatsup"}, {"t": "You feel great — you are on vacation and the sun is shining!", "a": "neverbetter"}, {"t": "Not good, not bad. Just in the middle.", "a": "soso"}, {"t": "Everything is OK in your life. No problems.", "a": "cantcomplain"}, {"t": "Your day is not so good. Something went wrong.", "a": "couldbebetter"}, {"t": "A very, very bad day. You want to cry.", "a": "awful"}, {"t": "Not exactly ten minutes. Maybe nine, maybe eleven.", "a": "about"}, {"t": "You go to the sea in spring, in summer and in winter.", "a": "threetimes"}, {"t": "At security you put your phone, keys and belt in this.", "a": "tray"}, {"t": "The place where you show your passport and give your suitcase.", "a": "desk"}, {"t": "After security, you sit here and wait for your flight.", "a": "lounge"}, {"t": "The board says your flight will not happen today.", "a": "cancelled"}, {"t": "Hold your passport in your hand before you get to the desk.", "a": "haveready"}, {"t": "A bag alone at the airport, and nobody is near it.", "a": "unattended"}, {"t": "There are no people and no noise. You can read here.", "a": "quiet"}, {"t": "Nothing bad can happen here. You are not in danger.", "a": "safe"}, {"t": "Many people stand one after another and wait.", "a": "line"}, {"t": "Your phone rings. You ask your friend to wait a moment.", "a": "hangon"}, {"t": "Don't turn left or right. Just keep walking.", "a": "gostraight"}, {"t": "You go from one side of the road to the other.", "a": "cross"}, {"t": "You go near a shop but you don't go in.", "a": "walkpast"}, {"t": "You are lost in New York and ask a stranger for directions.", "a": "howget"}, {"t": "You want to know the price of a T-shirt.", "a": "cost"}], "texts": [{"title": "At the airport", "sub": "Надя летит в Нью-Йорк.", "m": "2026-11", "t": "Nadya flies to New York [three times a year]. Today the airport is [quiet]. A man at the check-in [desk] smiles: “Hi! [How are you doing?]” “[Pretty good], thanks!” Nadya says. “Please [have ready] your passport.” “[Hang on a sec]… Here it is!” Then she goes to security. There is a long [line]. She puts her phone and keys in a [tray] and walks [through] the gate. A voice says: “Do not leave your bags [unattended].” Nadya goes to the [departure lounge] and drinks coffee. How much does a small coffee [cost]? Five dollars! Then she looks at the board. Oh no! Flight 245 is [cancelled]! But not her flight. Her flight is just late — [about] an hour.", "au": "audio/t_2026-11_0.mp3", "set": 1}, {"title": "Lost in New York", "sub": "Надя ищет Таймс-сквер.", "m": "2026-11", "t": "Nadya is in New York. She calls her friend Kate. “Hey, Kate! [What's up?]” “[Not bad]! And you? [How's it going?]” “Hmm… it [could be better]. I'm lost!” Nadya asks a man in the street: “Excuse me, [How do I get to] Times Square?” “Easy! [Go straight] for two blocks. Then [turn left] at the bank and [walk up] Seventh Avenue. [Walk past] the big hotel, [cross the street] and [turn right]. It's five minutes. And it's [safe] — don't worry!” Ten minutes later Kate calls again: “How are you now?” “[Never better]! I'm in Times Square!”", "au": "audio/t_2026-11_1.mp3", "set": 1}]};
+const KEY = 'mywords_nadya';
+const SPK = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
+const PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>', PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+const W = {}; DATA.words.forEach(w => W[w.id] = w);
+const syn = id => DATA.words.filter(x => x.g && x.g === W[id].g && x.id !== id);
+const byEn = t => DATA.words.find(x => x.en.toLowerCase().replace(/[.,!?]/g, '').trim() === t.toLowerCase().replace(/[.,!?]/g, '').trim());
+const st = {k:{}, m:{}};  // only for this visit: mistakes make a word come up more often
+const save = () => {}, prog = () => {};
+const SES = {ok: 0, n: 0};  // accuracy for this visit only
+function stat(good) { SES.n++; if (good) SES.ok++; const p = Math.round(SES.ok / SES.n * 100), el = document.getElementById('ses');
+  el.className = 'ses ' + (p >= 85 ? 'hi' : p >= 60 ? 'mid' : 'lo'); document.getElementById('sesV').textContent = p + '%';
+  document.getElementById('sesN').textContent = 'верно ' + SES.ok + ' из ' + SES.n; }
+const miss = id => { st.m[id] = (st.m[id] || 0) + 1; };
+const hit = id => { if (st.m[id]) st.m[id]--; };
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const shuf = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CYR = {'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x','к':'k','м':'m','т':'t','і':'i','в':'b','н':'h'};
+const norm = s => s.normalize('NFKC').toLowerCase().replace(/[аеорсухкмтівн]/g, c => CYR[c]).replace(/[’‘`´]/g, "'").replace(/[‐-―]/g, '-').replace(/[.,!?;:“”"«»]/g, '').replace(/\s+/g, ' ').trim();
+const core = s => norm(s).replace(/^(to|a|an|the) /, '');
+const img = id => 'img/' + id + '.jpg';
+let cur = null;
+function say(src) { if (cur) cur.pause(); cur = new Audio(src); cur.play(); }
+const spk = id => { const b = h('button', 'spk', SPK); b.title = 'Послушать'; b.onclick = e => { e.stopPropagation(); say('audio/w_' + id + '.mp3'); }; return b; };
+function player(src) {
+  const p = h('div', 'pl'), b = h('button', 'spk', PLAY), r = h('input'), t = h('span', 'tm', '0:00');
+  r.type = 'range'; r.min = 0; r.max = 100; r.step = 0.1; r.value = 0;
+  const a = new Audio(src); const f = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  b.onclick = () => { if (a.paused) { if (cur && cur !== a) cur.pause(); cur = a; a.play(); } else a.pause(); };
+  a.onplay = () => b.innerHTML = PAUSE; a.onpause = a.onended = () => b.innerHTML = PLAY;
+  a.ontimeupdate = () => { if (a.duration) { r.value = a.currentTime / a.duration * 100; t.textContent = f(a.currentTime) + ' / ' + f(a.duration); } };
+  r.oninput = () => { if (a.duration) a.currentTime = r.value / 100 * a.duration; };
+  p.append(b, r, t); p.audio = a; return p;
+}
+/* filters */
+let F = String(Object.keys(DATA.sets).length);
+function words() {
+  if (F === 'hard') return DATA.words.filter(w => st.m[w.id] > 0 && !st.k[w.id]);
+  return F === 'all' ? DATA.words : DATA.words.filter(w => String(w.set) === F);
+}
+function pick(list, n) {  // weighted: difficult words come up more often
+  const pool = list.map(w => ({w, s: Math.random() ** (1 / (1 + 3 * (st.m[w.id] || 0) - (st.k[w.id] ? .6 : 0)))}));
+  return pool.sort((a, b) => b.s - a.s).slice(0, n).map(x => x.w);
+}
+function prog_unused() {
+  const L = F === 'all' || F === 'hard' ? DATA.words : DATA.words.filter(w => String(w.set) === F);
+  const all = L.length, k = L.filter(w => st.k[w.id]).length, hd = L.filter(w => st.m[w.id] > 0 && !st.k[w.id]).length;
+  $('#pk').textContent = 'Знаю: ' + k + ' из ' + all; $('#pbar').style.width = (k / all * 100) + '%'; $('#ph').textContent = 'Трудных: ' + hd;
+}
+function drawFilters() {
+  const box = $('#filters'); box.innerHTML = '';
+  const opts = [];
+  Object.keys(DATA.sets).sort((a, b) => b - a).forEach((k, i) => opts.push([k, DATA.sets[k] + (i ? '' : ' · сейчас')]));
+  if (opts.length > 1) opts.push(['all', 'Все наборы вместе']);
+  opts.forEach(([v, l]) => { const b = h('button', F === v ? 'on' : '', l); b.onclick = () => { F = v; drawFilters(); prog(); run(); }; box.append(b); });
+}
+/* modes */
+const MODES = [
+  ['list', 'Все слова', 'список с картинками'], ['cards', 'Карточки', 'переверни и проверь себя'], ['match', 'Пары', 'слово и перевод'], ['choose', 'Перевод', 'выбери правильный'],
+  ['write', 'Напиши', 'слово по переводу'], ['sent', 'Предложения', 'впиши слово по смыслу'], ['situ', 'Ситуации', 'какое слово подходит?'], ['text', 'Текст', 'вставь слова в историю'], ['listen', 'Слушай', 'услышь и напиши']];
+let M = 'list';
+function drawModes() {
+  const box = $('#modes'); box.innerHTML = '';
+  MODES.forEach(([v, l, s], i) => { const b = h('button', M === v ? 'on' : '', l + '<small>' + s + '</small>'); b.onclick = () => { M = v; drawModes(); run(); }; box.append(b); });
+}
+function head(title, sub, cnt) { const S = $('#stage'); S.innerHTML = ''; S.append(h('h2', '', (cnt ? '<span class="cnt">' + cnt + '</span>' : '') + title)); if (sub) S.append(h('p', 'sub', sub)); return S; }
+let RUN = 0;
+function run(first) {
+  RUN++; if (cur) cur.pause();
+  const L = words();
+  if (!L.length) { head('Пусто', F === 'hard' ? 'Трудных слов пока нет. Отлично!' : 'Здесь пока нет слов.'); return; }
+  ({list, cards, match, choose, write, sent, situ, text, listen})[M](L);
+  if (!first && window.innerWidth < 700) $('#stage').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+function finish(S, ok, n, again) {
+  S.innerHTML = '';
+  const r = h('div', 'res', '<div class="big">' + ok + ' / ' + n + '</div><p>' + (ok === n ? 'Идеально!' : ok >= n * .7 ? 'Отлично, почти всё!' : 'Попробуй ещё раз: слова с ошибками будут попадаться чаще.') + '</p>');
+  const b = h('button', 'btn', 'Ещё раз'); b.onclick = again; r.append(b); S.append(r);
+}
+/* 0 list */
+function list(L) {
+  const S = head('Все слова', 'Нажми на карточку, чтобы послушать.', L.length + ' слов');
+  const g = h('div', 'list');
+  L.forEach(w => { const it = h('div', 'it', '<img loading="lazy" src="' + img(w.id) + '" alt=""><div><span class="lsp">' + SPK + '</span>' + esc(w.en) + '<small>' + esc(w.ru) + '</small></div>'); it.onclick = () => say('audio/w_' + w.id + '.mp3'); g.append(it); });
+  S.append(g);
+}
+/* 1 cards */
+let CD = 'en';
+function cards(L) {
+  const deck = pick(L, L.length), total = deck.length; let i = 0, known = 0;
+  const S = head('Карточки', CD === 'en' ? 'Посмотри на слово и вспомни перевод. Нажми на карточку, чтобы перевернуть.' : 'Посмотри на русское слово и вспомни, как это по-английски. Нажми на карточку, чтобы проверить.');
+  const sw = h('div', 'chips'); [['en', 'Английский → русский'], ['ru', 'Русский → английский']].forEach(([v, l]) => { const b = h('button', CD === v ? 'on' : '', l); b.onclick = () => { CD = v; cards(L); }; sw.append(b); });
+  sw.style.marginBottom = '14px'; S.append(sw);
+  const box = h('div'); S.append(box);
+  function show() {
+    if (i >= deck.length) { finish(S, known, total, () => cards(L)); return; }
+    const w = deck[i], e = w.ex[0];
+    box.innerHTML = ''; $('h2', S).innerHTML = '<span class="cnt">' + (i + 1) + ' / ' + deck.length + '</span>Карточки';
+    const fc = h('div', 'fc'), inn = h('div', 'in'), fr = h('div', 'side'), bk = h('div', 'side back');
+    fr.append(h('img', 'ph')); fr.lastChild.src = img(w.id);
+    const fill = e.t.startsWith('___') ? e.a[0].charAt(0).toUpperCase() + e.a[0].slice(1) : e.a[0];
+    const exs = '<div class="exs">' + esc(e.t).replace('___', '<b>' + esc(fill) + '</b>') + '</div>';
+    if (CD === 'en') {
+      const ww = h('div', 'w', '<span>' + esc(w.en) + '</span>'); ww.append(spk(w.id)); fr.append(ww, h('div', 'hint', 'нажми, чтобы перевернуть'));
+      bk.innerHTML = '<div class="ru">' + esc(w.ru) + '</div>' + exs;
+    } else {
+      fr.append(h('div', 'w', '<span>' + esc(w.ru) + '</span>'), h('div', 'hint', 'вспомни по-английски и нажми, чтобы проверить'));
+      const en = h('div', 'ru', esc(w.en) + ' '); en.append(spk(w.id)); bk.append(en); bk.insertAdjacentHTML('beforeend', exs);
+    }
+    inn.append(fr, bk); fc.append(inn); let heard = false;
+    fc.onclick = () => { fc.classList.toggle('flip'); if (CD === 'ru' && !heard) { heard = true; say('audio/w_' + w.id + '.mp3'); } };
+    const r = h('div', 'row'), y = h('button', 'btn', 'Знаю'), n = h('button', '', 'Ещё повторю');
+    y.onclick = () => { known++; i++; show(); };
+    n.onclick = () => { deck.push(w); i++; show(); };
+    r.append(n, y); box.append(fc, r); if (CD === 'en') say('audio/w_' + w.id + '.mp3');
+  }
+  show();
+}
+/* 2 match */
+function match(L) {
+  const set = pick(L, Math.min(6, L.length)); let done = 0, errs = 0, sel = null; const me = RUN;
+  const S = head('Пары', 'Нажми на слово, потом на его перевод.', '0 / ' + set.length);
+  const g = h('div', 'mgrid'), a = h('div', 'mcol'), b = h('div', 'mcol'); g.append(a, b); S.append(g);
+  shuf(set).forEach(w => { const x = h('button', '', '<img src="' + img(w.id) + '" alt=""><span>' + esc(w.en) + '</span>'); x.dataset.id = w.id; x.onclick = () => { if (x.classList.contains('done')) return; a.querySelectorAll('.sel').forEach(e => e.classList.remove('sel')); x.classList.add('sel'); sel = x; say('audio/w_' + w.id + '.mp3'); }; a.append(x); });
+  shuf(set).forEach(w => { const y = h('button', '', '<span>' + esc(w.ru) + '</span>'); y.onclick = () => {
+    if (!sel || y.classList.contains('done')) return;
+    if (sel.dataset.id === w.id) { sel.classList.remove('sel'); sel.classList.add('done'); y.classList.add('done'); hit(w.id); stat(true); sel = null; done++; $('.cnt', S).textContent = done + ' / ' + set.length;
+      if (done === set.length) setTimeout(() => me === RUN && finish(S, set.length - Math.min(errs, set.length), set.length, () => match(L)), 600); }
+    else { errs++; miss(sel.dataset.id); stat(false); [sel, y].forEach(e => { e.classList.remove('shake'); void e.offsetWidth; e.classList.add('shake'); }); }
+  }; b.append(y); });
+}
+/* generic one-by-one quiz */
+function quiz(title, sub, items, render) {
+  let i = 0, ok = 0; const me = RUN; const S = head(title, sub); const box = h('div', 'qbox'); S.append(box);
+  const next = () => { if (me !== RUN) return; if (i >= items.length) { finish(S, ok, items.length, () => run()); return; } $('h2', S).innerHTML = '<span class="cnt">' + (i + 1) + ' / ' + items.length + '</span>' + title; box.innerHTML = ''; render(box, items[i], good => { if (good) ok++; i++; const nb = h('button', 'btn nxt', 'Дальше →'); nb.onclick = next; const r = h('div', 'row'); r.append(nb); box.append(r); setTimeout(() => { nb.focus({preventScroll: true}); }, 30); }); };
+  next();
+}
+function options(box, right, pool, label, onDone, id) {
+  const wrong = shuf(pool.filter(w => w.id !== right.id && !(right.g && w.g === right.g))).slice(0, 3);
+  const o = h('div', 'opts'); let locked = false;
+  shuf([right, ...wrong]).forEach(w => { const b = h('button', '', esc(label(w))); b.onclick = () => {
+    if (locked) return; locked = true;
+    if (w.id === right.id) { b.classList.add('right'); hit(id); stat(true); onDone(true); }
+    else { b.classList.add('wrong'); [...o.children].find(x => x.textContent === label(right)).classList.add('right'); miss(id); stat(false); onDone(false); }
+  }; o.append(b); });
+  box.append(o);
+}
+const poolFor = L => L.length >= 4 ? L : DATA.words;
+/* 3 choose */
+function choose(L) {
+  const items = pick(L, Math.min(10, L.length)).map((w, i) => ({w, dir: i % 2}));
+  quiz('Перевод', 'Выбери правильный вариант.', items, (box, {w, dir}, done) => {
+    const hd = h('div', 'qhead', '<img src="' + img(w.id) + '" alt="">'); const t = h('div', 't', dir ? esc(w.ru) + '<small>как это по-английски?</small>' : esc(w.en) + '<small>что это значит?</small>');
+    hd.append(t); if (!dir) { hd.append(spk(w.id)); say('audio/w_' + w.id + '.mp3'); } box.append(hd);
+    options(box, w, poolFor(L), x => dir ? x.en : x.ru, good => { if (dir) say('audio/w_' + w.id + '.mp3'); done(good); }, w.id);
+  });
+}
+/* typed answer helper */
+function typed(box, answers, id, onDone, after) {
+  if (W[id] && W[id].g) answers = answers.concat(syn(id).map(x => x.en));  // synonyms count too
+  const fb = h('div', 'fb'); const inp = box.querySelector('.sent input') || (() => { const x = h('input', 'tin'); x.placeholder = 'напиши по-английски'; box.append(x); return x; })();
+  inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('autocapitalize', 'off');
+  const r = h('div', 'row'), hint = h('button', '', 'Подсказка'), go = h('button', 'btn', 'Проверить'); r.append(hint, go); box.append(r, fb);
+  let hints = 0, locked = false;
+  hint.onclick = () => { hints++; const a = answers[0]; inp.value = a.slice(0, Math.min(a.length - 1, hints * 2 - 1)); inp.focus(); };
+  const check = () => {
+    if (locked || !inp.value.trim()) return; locked = true; go.disabled = hint.disabled = true; inp.readOnly = true;
+    const v = inp.value, base = W[id] ? W[id].en : '';
+    let good = answers.some(a => norm(a) === norm(v) || core(a) === core(v)), close = false;
+    if (!good && base && core(base) === core(v)) { good = true; close = true; }
+    fb.className = 'fb ' + (close ? 'warn' : good ? 'ok' : 'bad');
+    fb.innerHTML = close ? 'Почти! Слово верное, но здесь нужна форма: <b>' + esc(answers[0]) + '</b>' : good ? 'Верно!' : 'Правильно: <b>' + esc(answers[0]) + '</b>';
+    inp.style.borderColor = close ? 'var(--warn)' : good ? 'var(--ok)' : 'var(--bad)'; good && !hints ? hit(id) : !good && miss(id); stat(good);
+    if (after) after(good); onDone(good);
+  };
+  go.onclick = check; inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); if (locked) { const n = box.querySelector('.nxt'); if (n) n.click(); } else check(); } }; setTimeout(() => inp.focus({preventScroll: true}), 50);
+}
+/* 4 write */
+function write(L) {
+  quiz('Напиши', 'Напиши слово по-английски. Подсказка открывает первые буквы.', pick(L, Math.min(10, L.length)), (box, w, done) => {
+    box.append(h('div', 'qhead', '<img src="' + img(w.id) + '" alt=""><div class="t">' + esc(w.ru) + '<small>как это по-английски?</small></div>'));
+    typed(box, [w.en], w.id, done, () => { say('audio/w_' + w.id + '.mp3'); box.querySelector('.qhead').append(spk(w.id)); });
+  });
+}
+/* 5 sentences */
+function sentBox(box, e, w, ru) {
+  const s = h('div', 'sent'); const [a, b] = e.t.split('___'); s.append(document.createTextNode(a)); const inp = h('input'); inp.style.width = Math.max(8, e.a[0].length + 2) + 'ch'; s.append(inp);
+  if (ru) s.append(h('span', 'tr', ' (' + esc(w.ru) + ')'));
+  s.append(document.createTextNode(b)); box.append(s); return inp;
+}
+function sent(L) {
+  const items = pick(L, Math.min(10, L.length)).map(w => { const k = Math.random() * w.ex.length | 0; return {w, e: w.ex[k], k}; });
+  quiz('Предложения', 'Впиши слово, которое подходит по смыслу. После ответа предложение прозвучит целиком.', items, (box, {w, e, k}, done) => {
+    const src = 'audio/s_' + w.id + (k ? '_' + k : '') + '.mp3';
+    sentBox(box, e, w, true); typed(box, e.a, w.id, done, () => { say(src); const b = h('button', 'spk', SPK); b.title = 'Послушать ещё раз'; b.onclick = () => say(src); box.querySelector('.sent').append(' ', b); });
+  });
+}
+/* 6 situations */
+function situ(L) {
+  const ids = new Set(L.map(w => w.id)); const items = shuf(DATA.situations.filter(s => ids.has(s.a))).slice(0, 10);
+  if (!items.length) { head('Ситуации', 'Для этих слов ситуаций пока нет.'); return; }
+  quiz('Ситуации', 'Прочитай ситуацию и выбери слово, которое подходит.', items, (box, s, done) => {
+    box.append(h('div', 'situ', esc(s.t)));
+    options(box, W[s.a], poolFor(L), x => x.en, good => { say('audio/w_' + s.a + '.mp3'); done(good); }, s.a);
+  });
+}
+/* 7 texts: drag & drop + click */
+function text(L) {
+  const ms = new Set(L.map(w => w.set)); const TT = DATA.texts.filter(t => ms.has(t.set));
+  const S = head('Текст', 'Перетащи слова в пропуски. Можно и кликом: сначала слово, потом пропуск.');
+  if (!TT.length) { S.append(h('p', 'empty', 'Для этих слов текста пока нет.')); return; }
+  if (TT.length > 1) { const c = h('div', 'chips'); TT.forEach((t, i) => { const b = h('button', i ? '' : 'on', esc(t.title)); b.onclick = () => { c.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); one(t); }; c.append(b); }); S.append(c); }
+  const box = h('div'); S.append(box);
+  function one(t) {
+    box.innerHTML = ''; if (cur) cur.pause();
+    box.append(h('h2', '', esc(t.title)), h('p', 'sub', esc(t.sub || '')));
+    const bank = h('div', 'bank'), tx = h('div', 'text'); let sel = null, left = 0, errs = 0;
+    const parts = t.t.split(/\[([^\]]+)\]/); const answers = [];
+    parts.forEach((p, i) => { if (i % 2 === 0) tx.append(document.createTextNode(p)); else {
+      left++; answers.push(p); const sl = h('span', 'slot', '&nbsp;'); sl.dataset.a = p;
+      const put = word => { if (sl.classList.contains('ok')) return;
+        const wp = byEn(p), wd = byEn(word.dataset.w);
+        if (norm(word.dataset.w) === norm(p) || (wp && wd && wp.g && wp.g === wd.g)) { sl.className = 'slot ok'; sl.textContent = word.dataset.w; word.remove(); sel = null; tx.querySelectorAll('.armed').forEach(x => x.classList.remove('armed')); left--; const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) hit(w.id); stat(true); if (!left) done(); }
+        else { errs++; sl.classList.add('bad'); setTimeout(() => sl.classList.remove('bad'), 600); const w = DATA.words.find(x => norm(x.en) === norm(p)); if (w) miss(w.id); stat(false); } };
+      sl.onclick = () => { if (sel) put(sel); };
+      sl.ondragover = e => { e.preventDefault(); sl.classList.add('over'); }; sl.ondragleave = () => sl.classList.remove('over');
+      sl.ondrop = e => { e.preventDefault(); sl.classList.remove('over'); const w = bank.querySelector('[data-w="' + CSS.escape(e.dataTransfer.getData('text')) + '"]'); if (w) put(w); };
+      tx.append(sl); } });
+    shuf(answers).forEach(a => { const b = h('button', '', esc(a.charAt(0).toLowerCase() + a.slice(1))); b.dataset.w = a; b.draggable = true;
+      b.ondragstart = e => e.dataTransfer.setData('text', a);
+      b.onclick = () => { bank.querySelectorAll('.sel').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); sel = b; tx.querySelectorAll('.slot:not(.ok)').forEach(x => x.classList.add('armed')); };
+      bank.append(b); });
+    const fb = h('div', 'fb');
+    function done() { fb.className = 'fb ok'; fb.textContent = 'Готово! Ошибок: ' + errs + '. Теперь послушай историю целиком.'; bank.remove(); }
+    box.append(bank, tx, fb, h('p', 'sub', 'Послушай историю:'), player(t.au));
+  }
+  one(TT[0]);
+}
+/* 8 listen */
+function listen(L) {
+  quiz('Слушай', 'Послушай предложение и впиши слово, которое пропущено.', pick(L, Math.min(10, L.length)), (box, w, done) => {
+    const p = player('audio/s_' + w.id + '.mp3'); box.append(p); const e = w.ex[0];
+    sentBox(box, e, w); typed(box, e.a, w.id, done); setTimeout(() => p.querySelector('button').click(), 150);
+  });
+}
+drawFilters(); drawModes(); prog(); run(true);
+</script></body></html>
